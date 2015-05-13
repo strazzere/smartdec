@@ -4,16 +4,25 @@ set(IDA_SDK_FOUND FALSE)
 #
 # Find IDA.
 #
+if(WIN32)
+    find_path(IDA_PATH
+        NAME "idag.exe" "idaq.exe"
+        HINTS $ENV{IDA_DIR} $ENV{IDADIR}
+        PATHS "C:/Program Files/IDA" "C:/Program Files (x86)/IDA"
+        DOC "IDA Pro installation directory.")
+endif()
 
-find_path(IDA_PATH
-    NAME "idag.exe" "idaq.exe"
-    HINTS $ENV{IDA_DIR} $ENV{IDADIR}
-    PATHS "C:/Program Files/IDA" "C:/Program Files (x86)/IDA"
-    DOC "IDA Pro installation directory.")
+if(APPLE)
+    find_path(IDA_PATH
+        NAME "idaq" "idaq64"
+	HINTS $ENV{IDA_DIR}
+	PATHS "/Applications/IDA\ Pro\ 6.8/idaq.app/Contents/MacOS/" "/Applications/IDA\ Pro\ 6.7/idaq.app/Contents/MacOS/" "/Applications/IDA\ Pro\ 6.6/idaq.app/Contents/MacOS/"
+	DOC "IDA Pro installation directory.")
+endif()
 
 if(IDA_PATH)
     set(IDA_FOUND TRUE)
-    message(STATUS "Looking for IDA Pro - found")
+    message(STATUS "Looking for IDA Pro - found @ ${IDA_PATH}")
 else()
     message(STATUS "Looking for IDA Pro - not found")
 endif()
@@ -39,7 +48,8 @@ set(compiler "unknown")
 if(BORLAND)
     set(compiler "bcc")
 endif()
-if(CMAKE_COMPILER_IS_GNUCXX)
+# APPLE should only ever have GCC / Clang, though there is not a variable for clang
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR APPLE)
     set(compiler "gcc")
 endif()
 if(MSVC)
@@ -58,7 +68,7 @@ endif()
 find_path(IDA_SDK_PATH
     NAME ${library_dir}
     HINTS $ENV{IDA_SDK_DIR}
-    PATHS "${IDA_PATH}/sdk"
+    PATHS "${IDA_SDK_DIR}"
     DOC "IDA Pro SDK directory.")
 
 if(IDA_SDK_PATH)
@@ -92,7 +102,9 @@ if(IDA_SDK_PATH)
         set(IDA_PLUGIN_EXT ".plw")
     endif()
 
-    message(STATUS "Looking for IDA Pro SDK - found")
+    message(STATUS "Looking for IDA Pro SDK - found @ ${IDA_SDK_PATH}")
+    message(STATUS "Looking for IDA Pro SDK includes - using ${IDA_INCLUDE_DIR}")
+    message(STATUS "Looking for IDA Pro SDK libraries - using ${IDA_LIBRARY_DIR}")
 else()
     message(STATUS "Looking for IDA Pro SDK - not found")
 endif()

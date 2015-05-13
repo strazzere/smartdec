@@ -11,3 +11,21 @@ Use `make' (or directly `pdflatex main.tex' twice) to build PDF files
 inside the directories.
 
 # vim:set et sts=4 sw=4 tw=72:
+
+
+OSX Installation
+================
+
+1. Attempt to run `make` and see what error occur, likely a `ctag` and `cmake` error.
+
+2. Ensure you update `ctag` via `brew`, otherwise you will get an error similar to;
+
+> [93%]tstrazzere@bebop:[smartdec] $ ctags --c++-kinds=+p --fields=+iaS --extra=+q -R /Users/tstrazzere/repo/smartdec/src
+> /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ctags: illegal option -- -
+> usage: ctags [-BFadtuwvx] [-f tagsfile] file ...
+
+3. Then install `cmake` via `brew` as well if you do not already have it.
+
+4. Ensure `cmake` is able to find your IDA Pro directory and IDA Pro SDK, these have been added to the `modules/FindIDA.cmake` file as they where on my system, though ensure they match your system. Setting the path to the environment variable `IDA_PATH` should help.
+
+5. Ensure `cmake` is able to access `boost` - if not try installing if via `brew`; `brew install boost`
